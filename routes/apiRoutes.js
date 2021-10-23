@@ -1,6 +1,5 @@
-// const express = require("express");
-// const router = require('express').Router(); 
 const db = require('../models'); 
+const mongojs = require("mongojs"); 
 
 module.exports = function(app) {
 
@@ -17,12 +16,12 @@ db.Workout.create(body)
 });
 
 //Simple test for a connection
-// app.get('/api/test', (req, res) => {
-//     res.json("this works!"); 
-// }); 
+app.get('/test', (req, res) => {
+    res.json("this works!"); 
+}); 
 
 //gets all Workouts 
-app.get("/workouts", (req, res) => {
+app.get("/api/workouts", (req, res) => {
 db.Workout.find({})
 .then(data => {
     res.json(data); 
@@ -33,33 +32,28 @@ db.Workout.find({})
 }); 
 
 //this updates a Workout using the POST method using the Workout's ID 
-app.post("/workouts/:id", (req, res) => {
-db.Workout.update(
-    {
-    _id: mongojs.ObjectId(req.params.id)
-    },
-    {
-    $set: {
-        type: req.body.type,
-        name: req.body.name, 
-        duration: req.body.duration, 
-        weight: req.body.weight, 
-        reps: req.body.reps,
-        sets: req.body.sets,
-        distance: req.body.distance
-    }
-    },
-    (error, data) => {
-    if (error) {
-        res.send(error);
-    } else {
-        res.send(data);
-    }
-    });
+app.post("/api/workouts/:id", (req, res) => {
+    db.Workout.updateOne({_id: mongojs.ObjectId(req.params.id)}, 
+        {$set: {
+            type: req.body.type,
+            name: req.body.name, 
+            duration: req.body.duration, 
+            weight: req.body.weight, 
+            reps: req.body.reps,
+            sets: req.body.sets,
+            distance: req.body.distance
+        }}, 
+        (err, data) => {
+            if (err) {
+                res.json(err)
+            } else {
+                res.json("Workout was updated" + data); 
+            }
+        }); 
 });
 
 //deletes a workout from database 
-app.delete("/delete/:id", (req, res) => {
+app.delete("/api/delete/:id", (req, res) => {
 db.Workout.remove(
     {
     _id: mongojs.ObjectId(req.params.id)
@@ -74,7 +68,7 @@ db.Workout.remove(
 }); 
 
 //This DELETEs all of the workouts 
-app.delete("/clearall", (req, res) => {
+app.delete("/api/clearall", (req, res) => {
 db.Workout.remove({}, (error, response) => {
     if (error) {
     res.send(error);
