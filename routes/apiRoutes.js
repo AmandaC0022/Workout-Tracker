@@ -31,6 +31,17 @@ db.Workout.find({})
 });
 }); 
 
+//route for stats page
+app.get("/api/workouts/range", (req, res) => {
+    db.Workout.find({})
+    .then(data => {
+        res.json(data); 
+    })
+    .catch(err => {
+        res.json(err); 
+    });
+}); 
+
 //this updates a Workout using the POST method using the Workout's ID 
 app.post("/api/workouts/:id", (req, res) => {
     db.Workout.updateOne({_id: mongojs.ObjectId(req.params.id)}, 
