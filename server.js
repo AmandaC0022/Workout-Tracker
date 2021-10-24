@@ -27,15 +27,6 @@ mongoose.connection.once('open', function() {
 require("./routes/apiRoutes")(app); 
 require("./routes/viewRoutes")(app); 
 
-// this renders the exercise page
-// app.get("/exercise", (req, res) => {
-//   res.sendFile(path.join(__dirname + '/views/exercise.html'));
-// });
-
-//this renders the stats page 
-// app.get("/stats", (req, res) => {
-//   res.sendFile(path.join(__dirname + '/public/stats.html'));
-// });
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
