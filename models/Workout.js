@@ -41,11 +41,18 @@ const WorkoutSchema = new Schema(
   },
   {
     toJSON: {
-      // include any virtual properties when data is requested
+      // include any virtual properties when data is requested and allows us to call the virtual property used below
       virtuals: true
     }
   }
 );
+
+//the virtual property allows us to combine data in the mongo schema. This one creates a closure that continues to add up the total workout minutes
+WorkoutSchema.virtual("totalDuration").get(function() {
+  return this.exercises.reduce((total, exercise) => {
+    return total + exercise.duration; 
+  }, 0); 
+}); 
 
 const Workout = mongoose.model("Workout", WorkoutSchema);
 

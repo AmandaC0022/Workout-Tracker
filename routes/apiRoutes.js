@@ -4,14 +4,14 @@ const mongojs = require("mongojs");
 module.exports = function(app) {
 
 //this creates a new Workout 
-app.post("/api/workouts", ({ body }, res) => {
+app.post("/api/workouts", async ({ body }, res) => {
 // console.log(body); 
-db.Workout.create(body)
+await db.Workout.create(body)
     .then(data => {
-    res.json(data);
+        res.json(data);
     })
     .catch(err => {
-    res.json(err);
+        res.json(err);
     });
 });
 
@@ -42,26 +42,35 @@ app.get("/api/workouts/range", (req, res) => {
     });
 }); 
 
-//this updates a Workout using the POST method using the Workout's ID 
-app.post("/api/workouts/:id", (req, res) => {
-    db.Workout.updateOne({_id: mongojs.ObjectId(req.params.id)}, 
-        {$set: {
-            type: req.body.type,
-            name: req.body.name, 
-            duration: req.body.duration, 
-            weight: req.body.weight, 
-            reps: req.body.reps,
-            sets: req.body.sets,
-            distance: req.body.distance
-        }}, 
-        (err, data) => {
-            if (err) {
-                res.json(err)
-            } else {
-                res.json("Workout was updated" + data); 
-            }
-        }); 
-});
+//this updates a Workout using the PUT method and the Workout's ID 
+app.put("/api/workouts/:id", ({ body, params }, res) => {
+    // console.log(body, params)
+    const workoutId = params.id;
+    let savedExercises = [];
+
+    // gets all the currently saved exercises in the current workout
+    db.Workout.find({_id: workoutId})
+        .then(dbWorkout => {
+            // console.log(dbWorkout)
+            savedExercises = dbWorkout[0].exercises;
+            res.json(dbWorkout[0].exercises);
+            let allExercises = [...savedExercises, body]; 
+            // console.log(allExercises); 
+            updateWorkout(allExercises); 
+        })
+        .catch(err => {
+            res.json(err);
+        });
+
+    function updateWorkout(exercises){
+        db.Workout.findByIdAndUpdate(workoutId, {exercises: exercises}, 
+            function(err, doc){
+                if(err){
+                    console.log(err)
+                }
+            })
+        }      
+}); 
 
 //deletes a workout from database 
 app.delete("/api/delete/:id", (req, res) => {
