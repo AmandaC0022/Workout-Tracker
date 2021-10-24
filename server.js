@@ -5,7 +5,7 @@ const app = express();
 // const path = require('path');  
 // const routes = require("./routes"); 
 // const db = require('./models'); 
-// const connectionString = "mongodb+srv://AmandaC0022:<Thebig21>@cluster0.rpywh.mongodb.net/workout?retryWrites=true&w=majority";  
+
 const PORT = process.env.PORT || 3000;
 
 app.use(logger("dev"));
